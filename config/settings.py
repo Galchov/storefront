@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'apps.playground',
     'apps.store',
     'apps.tags',
+    'apps.likes',
 
     # Third-party apps
     'debug_toolbar',

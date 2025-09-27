@@ -44,6 +44,8 @@ INSTALLED_APPS = [
 
     # Custom apps
     'apps.playground',
+    'apps.store',
+    'apps.tags',
 
     # Third-party apps
     'debug_toolbar',

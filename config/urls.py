@@ -19,7 +19,9 @@ from django.urls import path, include
 from debug_toolbar.toolbar import debug_toolbar_urls
 
 
+admin.site.site_header = 'Storefront admin'
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('playground/', include('apps.playground.urls')),
+    path('', include('apps.playground.urls')),
 ] + debug_toolbar_urls()

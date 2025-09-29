@@ -1,9 +1,17 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 from django.utils.translation import gettext_lazy as _
 
 
 class Collection(models.Model):
     title = models.CharField(max_length=255)
+    featured_product = models.ForeignKey('Product', on_delete=models.SET_NULL, null=True, related_name='+')
+
+    class Meta:
+        ordering = ['title']
+
+    def __str__(self) -> str:
+        return self.title
 
 
 class Promotion(models.Model):
@@ -13,8 +21,15 @@ class Promotion(models.Model):
 
 class Product(models.Model):
     title = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255)
     description = models.TextField()
-    price = models.DecimalField(max_digits=6, decimal_places=2)
+    unit_price = models.DecimalField(
+        max_digits=6, 
+        decimal_places=2,
+        validators=[
+            MinValueValidator(1),
+        ]
+    )
     inventory = models.IntegerField()
     last_update = models.DateTimeField(auto_now=True)
     collection = models.ForeignKey(to=Collection, on_delete=models.PROTECT, related_name='products')
@@ -24,6 +39,8 @@ class Product(models.Model):
     promotions = models.ManyToManyField(to=Promotion, related_name='products')  
     # If not related_name, default will be 'product_set'
 
+    def __str__(self) -> str:
+        return f'{self.title} - {self.description}'
 
 class Customer(models.Model):
     class MembershipChoices(models.TextChoices):
@@ -37,6 +54,12 @@ class Customer(models.Model):
     phone = models.CharField(max_length=255)
     birth_date = models.DateField(null=True)
     membership = models.CharField(max_length=1, choices=MembershipChoices, default=MembershipChoices.BRONZE)
+
+    def __str__(self) -> str:
+        return f'{self.first_name} {self.last_name}'
+    
+    class Meta:
+        ordering = ['first_name', 'last_name']
 
 
 class Address(models.Model):

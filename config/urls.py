@@ -14,6 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import debug_toolbar
 from django.contrib import admin
 from django.urls import path, include
 from debug_toolbar.toolbar import debug_toolbar_urls
@@ -24,4 +25,6 @@ admin.site.site_header = 'Storefront admin'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('apps.playground.urls')),
-] + debug_toolbar_urls()
+    path('store/', include('apps.store.urls')),
+    path('__debug__/', include(debug_toolbar.urls))
+]

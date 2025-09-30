@@ -42,15 +42,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # Third-party apps
+    'debug_toolbar',
+    'rest_framework',
+
     # Custom apps
     'apps.playground',
     'apps.store',
     'apps.tags',
     'apps.likes',
     'apps.store_custom',
-
-    # Third-party apps
-    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -139,3 +140,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# REST Framework
+
+REST_FRAMEWORK = {
+    'COERCE_DECIMAL_TO_STRING': False,
+}

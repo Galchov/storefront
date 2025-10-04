@@ -53,7 +53,6 @@ Update packages:
 ```bash
 sudo apt update && sudo apt upgrade -y
 ```
-
 Confirm Python version:
 ```bash
 python3 --version
@@ -127,7 +126,6 @@ CREATE DATABASE yourdb;
 
 ## Run Migrations / Admin / Server
 **Once the settings above are properly configured move to bulding mode by running:**
-
 ```bash
 python manage.py migrate
 python manage.py createsuperuser
@@ -147,6 +145,4 @@ storefront/
 ```
 
 ## License
-
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-

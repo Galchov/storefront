@@ -6,141 +6,144 @@
 
 # Storefront
 
-## Descripton
-
-A fully-functional learning project built with **Django** and **Django REST Framework** — from models and auth to APIs, admin, tests, and deployment.
-
+## Description
+A fully-functional learning project built with **Django** and **Django REST Framework** — from models and auth to APIs, admin, tests, and deployment.  
 **Status:** Learning / non-commercial. Built as part of a course.
 
-## Tech Stack
+## Table of Contents
+- [Tech Stack](#tech-stack)
+- [Features](#features)
+- [Documentation](#documentation)
+- [Quickstart](#quickstart)
+- [Environment Variables](#environment-variables)
+- [Database Setup (PostgreSQL)](#database-setup-postgresql)
+- [Run Migrations / Admin / Server](#run-migrations--admin--server)
+- [Project Structure](#project-structure)
+- [License](#license)
 
-- **Backend**: Python, Django (5.x), Django REST Framework (3.x)
-- **DB**: PostgreSQL (recommended), SQLite for quick start
-- **Auth**: Session/Token/JWT
-- **Ops**: pip + venv (personal choice for this particular project, otherwise feel free to use any other like Poetry, uv, Pipenv, etc.)
-- **Version Control**: Git and GitHub
+## Tech Stack
+- **Backend:** Python, Django (5.x), Django REST Framework (3.x)
+- **DB:** PostgreSQL (recommended) or SQLite for quick start
+- **Auth:** Session / Token / JWT (documented in API docs)
+- **Tooling:** `pip` + `venv` (Poetry/uv also fine)
+- **Version Control:** Git + GitHub
 
 ## Features
-
-- Django models with a relational DB (PostgreSQL)
+- Relational models (PostgreSQL)
 - Django Admin customization for quick data management
-- Complete DRF API: serialization, validation, auth, filtering, pagination
+- DRF API with serialization, validation, auth, filtering, pagination
 
-## Dependencies (requirements.txt)
+## Documentation
+Full documentation lives in [`docs/`](docs/index.md). Start here:
+- **Overview:** [`docs/01-overview.md`](docs/01-overview.md)
+- **Architecture:** [`docs/02-architecture.md`](docs/02-architecture.md)
+- **Domain Models (ERD):** [`docs/03-domain-models.md`](docs/03-domain-models.md)
+- **API Guide:** [`docs/04-api/endpoints.md`](docs/04-api/endpoints.md)
+- **Development:** [`docs/05-development.md`](docs/05-development.md)
+- **Deployment:** [`docs/09-deployment.md`](docs/09-deployment.md)
 
-```env
-asgiref==3.9.2
-Django==5.2.6
-django-debug-toolbar==6.0.0
-djangorestframework==3.16.1
-psycopg2==2.9.10
-python-decouple==3.8
-sqlparse==0.5.3
-```
+> Dependencies are pinned in [`requirements.txt`](requirements.txt).
 
-## Quickstart (on Ubuntu)
+## Quickstart
+### 1) Prerequisites (Ubuntu)
+- Python 3.12+
+- PostgreSQL 14+ (or skip for SQLite quick start)
 
-### 1) Prerequisites
-- Python 3.12+ (Ubuntu comes with Python)
-- PostgreSQL 14+ (or skip and use SQLite for quick start)
-
-### 2) Update the system
-Make sure the system is up to date and upgrade all packages
+Update packages:
 ```bash
 sudo apt update && sudo apt upgrade -y
 ```
-Confirm Python version
+
+Confirm Python version:
 ```bash
 python3 --version
 ```
 
-### 3) Clone and Environment
-Clone the repository to your preferred local workspace
+### 2) Clone and Environment
+Clone the repository to your preferred local workspace and go to the project directory. Make sure venv is activated before installing the requirements.
 ```bash
 git clone git@github.com:Galchov/storefront.git
-```
-Create virtual environment (optionally named venv)
-```bash
+cd storefront
 python3 -m venv venv
-```
-Make sure you activate it before installing any dependencies / packages
-```bash
 source venv/bin/activate
-```
-Install the packages from requirements.txt file
-```bash
 pip install -r requirements.txt
 ```
-Confirm all packages are installed
+Confirm venv is activated and the requirements are installed by running:
 ```bash
 pip list
 ```
 
-### 3) Configure the Database
-
-In the terminal run
-```bash
-sudo -i -u postgres
-```
-Once in the local postgres, go to the console/shell by running
-```bash
-psql
-```
-Create a new database
-```SQL
-CREATE DATABASE database_name;
-```
-
-### 4) Local settings and environment variables (Secret Key, Database credentials, DEBUG, etc.)
-Inside the project on base directory level, create `.env` file where the private variables will be stored
+## Environment Variables
+In the project's base directory create `.env` file:
 ```bash
 touch .env
 ```
-Store the variables that MUST NOT to be published
-```Python
-SECRET_KEY = 'your project secret key'
-DEBUG = True or False
-DB_ENGINE = 'database engine'
-DB_NAME = 'database name'
-DB_USER = 'database username'
-DB_PASSWORD = 'user password'
-DB_HOST = 'host name'
-DB_PORT = 'port number'
+And store the variables like this:
+```dotenv
+DEBUG=True
+SECRET_KEY=change-me
+ALLOWED_HOSTS=127.0.0.1,localhost
+
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=yourdb
+DB_USER=youruser
+DB_PASSWORD=yourpassword
+DB_HOST=localhost
+DB_PORT=5432
 ```
-Then in `settings.py` implement the following settings
+Then in `settings.py` implement the following:
 ```Python
 from decouple import config
 
 SECRET_KEY = config('SECRET_KEY')
-
-DEBUG = config('DEBUG')
+DEBUG = config('DEBUG', cast=bool, default=False)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',')
 
 DATABASES = {
     'default': {
-        'ENGINE': config('DB_ENGINE'),
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': config('DB_PORT'),
+        'ENGINE': config('DB_ENGINE', default='django.db.backends.sqlite3'),
+        'NAME': config('DB_NAME', default='db.sqlite3'),
+        'USER': config('DB_USER', default=''),
+        'PASSWORD': config('DB_PASSWORD', default=''),
+        'HOST': config('DB_HOST', default=''),
+        'PORT': config('DB_PORT', default=''),
     }
 }
 ```
 
-### 5) Migrate, Admin, Run
-**Once the settings above are properly configured let's go to building mode**
+## Database Setup (PostgreSQL)
+In the terminal switch to the postgres user and open psql:
+```bash
+sudo -i -u postgres
+psql
+```
+Create DB and (optionally) a role:
+```SQL
+CREATE DATABASE yourdb;
+-- CREATE ROLE youruser WITH LOGIN PASSWORD 'yourpassword';
+-- GRANT ALL PRIVILEGES ON DATABASE yourdb TO youruser;
+```
+`\q` to exit, `exit` to return to your shell.
 
-Migrate the current migrations to the new database
+## Run Migrations / Admin / Server
+**Once the settings above are properly configured move to bulding mode by running:**
+
 ```bash
 python manage.py migrate
-```
-Create the superuser to manage the admin panel
-```bash
 python manage.py createsuperuser
-```
-Start the server and have fun
-```bash
 python manage.py runserver
+```
+Open: http://127.0.0.1:8000/
+
+## Project Structure
+```bash
+storefront/
+├─ apps/                     # Django apps
+├─ config/                   # settings, urls, wsgi/asgi
+├─ docs/                     # extended documentation
+├─ manage.py
+├─ requirements.txt
+└─ LICENSE
 ```
 
 ## License
